@@ -4,10 +4,7 @@ import camelot
 import re
 from collections import OrderedDict
 import numpy as np
-
-
 from datetime import datetime
-
 
 
 def cleaning(filepath,bankname,passkey,act_type)  : 
@@ -48,10 +45,6 @@ def cleaning(filepath,bankname,passkey,act_type)  :
 
         if(bankname == 'IC' or bankname == 'SI'):
             tables = tables[:1]
-        
-    
-        
-
         
 
 

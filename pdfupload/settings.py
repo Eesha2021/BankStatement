@@ -15,8 +15,7 @@ SECRET_KEY = 'm7e-6g(-_1!mg_19ixd!y8i8nndxjtx8wlwg+61rasnv0n%uef'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['digi-statement.herokuapp.com','127.0.0.1','e870560a01ce.ngrok.io','statementanalysis.herokuapp.com','digi-statements.azurewebsites.net']
-
+ALLOWED_HOSTS = ['bf2e1054f157.ngrok.io']
 
 # Application definition
 
@@ -122,3 +121,5 @@ MEDIA_ROOT=os.path.join(BASE_DIR,"media")
 
 CORS_ORIGIN_ALLOW_ALL = True 
 CORS_ALLOW_CREDENTIALS = True
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379

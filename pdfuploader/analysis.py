@@ -41,7 +41,7 @@ def cheque_bounce(dfl):
   #we have created a dataframe from dictionary
   #print(dict)
   df_bank=pd.DataFrame(dit)
-  return df_bank,"Bounce Txns"
+  return df_bank
 
 
 def top5Credit(dfl):
@@ -50,7 +50,7 @@ def top5Credit(dfl):
   df['day']=df['date'].dt.day
   m=df["month"]
   m = list(dict.fromkeys(m))
-  print(m)
+  #print(m)
   df['month name'] = df['month'].apply(lambda x: calendar.month_abbr[x])
   mn=df["month name"]
   mn= list(dict.fromkeys(mn)) 
@@ -77,8 +77,11 @@ def top5Credit(dfl):
     maxLength = 0
   ds=pd.DataFrame(index=np.arange(maxLength), columns=lm)
   for i in range(0,len(lm)):
-    ds[lm[i]]=pd.Series(lst9[i][0:])  
-  return ds , "Banking Detail"
+    ds[lm[i]]=pd.Series(lst9[i][0:])
+  print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+  print(ds)
+  #ds = ds.fillna('')  
+  return ds
 
 def top5Debit(dfl):
   df=dfl.copy(deep=True)
@@ -114,7 +117,7 @@ def top5Debit(dfl):
   dp=pd.DataFrame(index=np.arange(maxLength), columns=lm)
   for i in range(0,len(lm)):
     dp[lm[i]]=pd.Series(lst10[i][0:])  
-  return dp , "Banking Detail"   
+  return dp  
 
 def Balances(dfl):
   df=dfl.copy(deep=True)
@@ -148,7 +151,7 @@ def Balances(dfl):
     data=[]
 
     
-    for i in range(0,ndg[0]):
+    for i in range(0,ndg):
       if(newdf["day"][i] <= 1):
         D1B1.append(newdf["balance"][i])
       if(newdf["day"][i] <= 14):
@@ -247,7 +250,7 @@ def loan(dfl):
     crt.append(row["credit"])
     blc.append(row["balance"])
     tmp = str(row['debit']).lower
-    if(tmp is 'nan' or tmp is ""):   
+    if(tmp == 'nan' or tmp == ""):   
          cta.append("Loan")
     else:
          cta.append("Loan Repayment")
@@ -263,7 +266,7 @@ def loan(dfl):
   dfk.to_csv (r'loanAna.csv', index = False, header=True)
   return dfk, "Loan Analysis"
     
-def fund_recieved(dfl):
+def fund_recieved(dfl,user_df):
   df=dfl.copy(deep=True)
   for i in range(0,len(df["credit"].isnull())):
     if (df["credit"].isnull())[i]==True:
@@ -309,7 +312,7 @@ def fund_recieved(dfl):
     Demand_Draft=[]
     Internal_Transactions=[]         
     Others=[]
-    Ac_hol=myfun()
+    Ac_hol=user_df["B"][0]
     for i in range(0,len(newdf["description"])):
        if(newdf["description"][i].find("neft") != -1 ):
          neft.append(i)
@@ -386,9 +389,9 @@ def fund_recieved(dfl):
     df_b["Total"][i]= df_b["Cash"][i]+ df_b["Cheque"][i]+ df_b["NEFT"][i]+ df_b["RTGS"][i] + df_b["IMPS"][i]+ df_b["Demand Draft"][i]+df_b["Internal Transactions"][i]+df_b["Others"][i]+df_b["Online Transfers"][i]
   df_b.to_csv (r'fundrecived.csv', index = False, header=True)
   print('my data',df[(df['date'].dt.month==1) & (df['description'].str.contains('imps')) & (df['credit']!=0.0) ]['credit'].head(15))
-  return df_b, "Fund Recieved"
+  return df_b
   
-def fund_remittances(dfl):
+def fund_remittances(dfl,user_df):
   df=dfl.copy(deep=True)
   for i in range(0,len(df["debit"].isnull())):
     if (df["debit"].isnull())[i]==True:
@@ -438,7 +441,7 @@ def fund_remittances(dfl):
       if(newdf["description"][i].find("neft") != -1 or newdf["description"][i].find("neft") != -1):
         data.append(i)
     print("data",data)
-    Ac_hol=myfun()
+    Ac_hol=user_df["B"][0]
     for i in range(0,len(newdf["description"])):
        if(newdf["description"][i].find("neft") != -1):
           neft.append(i)
@@ -454,7 +457,7 @@ def fund_remittances(dfl):
           online_transfer.append(i)
        elif(newdf["description"][i].find("demand draft") != -1):
           Demand_Draft.append(i)
-       elif(newdf["description"][i].find("self") != -1 or newdf["description"][i].find(Ac_hol) != -1 ):#Ac_hol=myfun()
+       elif(newdf["description"][i].find("self") != -1 or newdf["description"][i].find(Ac_hol) != -1 ):#Ac_hol=()myfun()
           Internal_Transactions.append(i)
        else:
           Others.append(i)
@@ -522,16 +525,16 @@ def fund_remittances(dfl):
   for i in range(0,len(lm)):
     df_b["Total"][i]= df_b["Cash"][i]+ df_b["Cheque"][i]+ df_b["NEFT"][i]+ df_b["RTGS"][i] + df_b["Demand Draft"][i]+df_b["Internal Transactions"][i]+df_b["Others"][i]+df_b["IMPS"][i]+df_b["Online Transfers"][i]
     df_b.to_csv (r'fundreminatnce.csv', index = False, header=True)
-  return df_b, "Fund Remittances"
+  return df_b
   
-def analysis_sheets(dfl):
+def analysis_sheets(dfl,user_df):
   df=dfl.copy(deep=True)
   df["date"]=pd.to_datetime(df["date"],dayfirst=True,errors='coerce')
   df['month']=df['date'].dt.month
   df['year'] = pd.DatetimeIndex(df['date']).year
   df['month']=df['month'].fillna(0)
   df['month'] = df['month'].astype(int)
-  Ac_hol=myfun()
+  Ac_hol=user_df['B'][0]
   #df['month name'] = pd.to_datetime(df['month'], format='%m').dt.month_name().str.slice(stop=3)
   df['month name'] = df['month'].apply(lambda x: calendar.month_abbr[x])
   lm=[]
@@ -802,7 +805,7 @@ def analysis_sheets(dfl):
     new_deb_df.reset_index(inplace=True)
     nds=new_deb_df.shape
     nnd=nds[0]
-    Ac_hol=myfun()
+    Ac_hol=user_df["B"][0]
     for i in range(0,nnd):
       s=new_deb_df["description"][i]
       t=s.lower()
@@ -905,6 +908,8 @@ def analysis_sheets(dfl):
     iw=[]
     iwF=[]
     cdf=df[df['month year'] == i]
+    #print("ccccccccccccccccccccddddddddddddddddddddddddddddddddddddddddddddddddddffffffffffffffffffffffffffffffffffffffffffffff")
+    #print(cdf)
     cdf["ind"]=cdf.index
     #cdf.reset_index(inplace=True)
     x=cdf["ind"]  
@@ -1042,7 +1047,7 @@ def analysis_sheets(dfl):
   dfx=dfx
   dfx.to_csv (r'imonthly.csv', index = False, header=True)
   #print(dfx)
-  return dfx,"Analysis data"
+  return dfx
 
 def FrequentCr(dfl):
   df=dfl.copy(deep=True)
@@ -1118,7 +1123,10 @@ def FrequentCr(dfl):
   df_bank=pd.DataFrame(dicn)  
   df_bank.drop_duplicates(subset ="Description",keep = "first", inplace = True)
   u.append((df_bank, "Freq Cr"))
-  return u
+  df_bank=df_bank.fillna('')
+  return df_bank
+  
+  
 def FrequentDb(dfl):
   df=dfl.copy(deep=True)
   g=[]
@@ -1187,7 +1195,7 @@ def FrequentDb(dfl):
   df_bank=pd.DataFrame(dicn)
   df_bank.drop_duplicates(subset ="Description",keep = "first", inplace = True)
   g.append((df_bank, "Freq Dr"))
-  return g  
+  return df_bank 
 
 def average_Monthy(dfl):
   df=dfl.copy(deep=True)
@@ -1316,7 +1324,7 @@ def average_Monthy(dfl):
   #we have created a dataframe from dictionary
   #print(dict)
   df_bank=pd.DataFrame(dict2)        
-  return df_bank, "Saving Analysis"
+  return df_bank
 
 def opening_bal(dfl):
   df=dfl.copy(deep=True)
@@ -1334,7 +1342,7 @@ def opening_bal(dfl):
 #we have created a dataframe from dictionary
 #print(dict)
   dfx=pd.DataFrame(dn)
-  return dfx, ""
+  return dfx
 
 def penalty(dfl):
   df=dfl.copy(deep=True)
@@ -1372,7 +1380,7 @@ def penalty(dfl):
 #we have created a dataframe from dictionary
 #print(dict)
   dfx=pd.DataFrame(dict3)
-  return dfx, "Daily Balances"
+  return dfx
 
 def credit(dfl):
   df=dfl.copy(deep=True)
@@ -1407,7 +1415,7 @@ def credit(dfl):
   #we have created a dataframe from dictionary
   #print(dict)
   df_bank=pd.DataFrame(d)
-  return df_bank, "Saving Analysis"
+  return df_bank
 
 def Dividend(dfl):
   df=dfl.copy(deep=True)  
@@ -1440,7 +1448,7 @@ def Dividend(dfl):
   dx["Balance"]=bal
   #print(dict)
   dfx=pd.DataFrame(dx)
-  return dfx, "Saving Analysis"
+  return dfx
 
 def high_value(dfl):
   df=dfl.copy(deep=True)
@@ -1450,8 +1458,9 @@ def high_value(dfl):
   highdeb=sdeb.head(5)
   finalhigh=highdeb.append(highcred)
   finalhigh.sort_values(by=(["date"]),ascending=False)
-  return finalhigh, "Saving Analysis"
-  
+  return highdeb
+  #return finalhigh, "Saving Analysis"
+
 def credit_analysis(df):
   df = df.copy(deep=True)
   for i in range(0,len(df["credit"].isnull())):
@@ -1518,7 +1527,7 @@ def credit_analysis(df):
   df_dict["Non-Identified"]=OTHERS
   #we have created a dataframe from dictionary
   df_b=pd.DataFrame(df_dict)
-  return df_b, "BankStatementWithCharts"
+  return df_b
 
 def debit_analysis(df):
   df = df.copy(deep=True)
@@ -1592,7 +1601,7 @@ def debit_analysis(df):
   #we have created a dataframe from dictionary
   #print(dict)
   df_b=pd.DataFrame.from_dict(df_dict)
-  return df_b, "BankStatementWithCharts"
+  return df_b
 
 def finance_analysis(df):
   df = df.copy(deep=True)
@@ -1671,7 +1680,7 @@ def finance_analysis(df):
   #we have created a dataframe from dictionary
   #print(dict)
   df_b=pd.DataFrame(df_dict)
-  return df_b, "BankStatementithCharts"
+  return df_b
 
 def internal_txn(df):
   df = df.copy(deep=True)
@@ -1703,7 +1712,7 @@ def internal_txn(df):
   #we have created a dataframe from dictionary
   #print(dict)
   dfx=pd.DataFrame(df_dict)
-  return dfx, "Internal Transaction"
+  return dfx
 
 def interest_analysis(df):
   df = df.copy(deep=True)
@@ -1735,7 +1744,7 @@ def interest_analysis(df):
   df_dict["Credit"]=cred
   df_dict["Balance"]=bal
   dfx=pd.DataFrame(df_dict)
-  return dfx, "Saving Analysis"
+  return dfx
 
 def average_Quaterly_analysis(dfn):
   #df["date"]=pd.to_datetime(df["Date"],dayfirst=True,errors='coerce')
@@ -1757,7 +1766,11 @@ def average_Quaterly_analysis(dfn):
   lm = list(dict.fromkeys(lm))
   
   Mon=lm
+  #print("Print Mon")
+  #print(Mon)
   Mon2=Mon[2:len(Mon):3]
+  #print("print Mon2")
+  #print(Mon2)
   lm=[]
   for i in range(0,(df.shape)[0]):
     x1=df["month name"][i]
@@ -1777,22 +1790,33 @@ def average_Quaterly_analysis(dfn):
   for i in Mon2:
       g = []
       cb = 0
-      for j in range(0,(df.shape)[0]):        
+      for j in range(0,(df.shape)[0]):
+      		
+          
           if df["month year"][j] <= i:
-              g.append(df["balance"][j])
+          		
+          	  #print("ssssssssssssssss")
+          	  #print(df["month year"][j])
+          	  g.append(df["balance"][j])
       for j in g:
-          cb = cb + j
+      	  cb = cb + j
       fl.append(cb)
   print(fl)    
   f1x = list(map(lambda x:x/3,fl))
   df_dict={}
   df_dict["Month"]=f
   df_dict["Amount"]=f1x
-  print(df_dict)
   #we have created a dataframe from dictionary
   #print(dict)
-  df_bank=pd.DataFrame(df_dict)        
-  return df_bank, "Saving Analysis"
+  #print("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+  #print(df_dict)
+  #df_bank=pd.DataFrame(df_dict)        
+  dfx = pd.DataFrame.from_dict(df_dict, orient='index')
+  dfx = dfx.transpose()
+  #dfx=pd.DataFrame(df_dict)
+  #print(df_dict)    
+  return dfx 
+  #return df_bank
 
 def loan_analysis(df):
   df = df.copy(deep=True)
@@ -1821,8 +1845,10 @@ def loan_analysis(df):
   df_dict["Category"]=categories
   df_dict["credit"]=deb
   df_dict["Balance"]=bal
-  dfx=pd.DataFrame(df_dict)    
-  return dfx , "Saving Analysis"  
+  
+  dfx=pd.DataFrame(df_dict)
+  print(df_dict)    
+  return dfx 
 
 def chartsfrequent(df):
   df = df.copy(deep = True)
@@ -1874,7 +1900,7 @@ def chartsfrequent(df):
   result.drop("balance",axis=1,inplace=True)
   result.drop("index",axis=1,inplace=True)
   result.drop("credit",axis=1,inplace=True)
-  return result, "BankStatetnWithCharts"
+  return result
 
 
 
@@ -1887,7 +1913,7 @@ def statement_charts(df):
   result.reset_index(level =['year', 'months'], inplace = True) 
   result.drop("year",axis=1,inplace=True)
   result['months'] = result['months'].apply(lambda x: calendar.month_name[x])
-  return result, "BankStatementWithCharts"
+  return result
 
 def Non_rev(dfl):
   df = dfl.copy(deep = True)
@@ -1909,7 +1935,7 @@ def Non_rev(dfl):
     result=result.append(x) 
     result.to_csv (r'non.csv', index = False, header=True)
   print("nonrevene ka result-",result)
-  return result, "NonRevenue Transactions"
+  return result
 
 def salary_analysis(df):
   df = df.copy(deep = True)
@@ -2054,4 +2080,5 @@ def salary_analysis(df):
   result_final.append((result3, "Saving Analysis"))
   result_final.append((result4, "Saving Analysis"))
   result_final.append((result6, "Saving Analysis"))
-  return result_final 
+  return result_final
+  

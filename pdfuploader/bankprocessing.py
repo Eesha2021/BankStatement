@@ -4,11 +4,13 @@ import re
 import pandas as pd
 
 df=pd.DataFrame()
+#global df
 
 def myfun():
 	global df
 	return df["B"][0]
-
+	#return df
+	
 def bob(text, act_type, start_date, end_date):
 	global df
 	List1=["Name of the Account Holder","Account Number","Name of the Bank","Account Type","Email","PAN","Mobile Number","Tenure of Relationship with Bank","IFSC Code","Interest Rate","Statement upload","Missing Months"]
